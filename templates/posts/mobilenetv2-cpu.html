@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<article class="max-w-3xl mx-auto">
+    <header class="mb-10 border-b border-zinc-200 pb-8">
+        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-black mb-6 inline-block">← Back to Blog</a>
+        
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-4">
+            Choosing MobileNetV2 Over ResNet for CPU Inference
+        </h1>
+        <p class="text-zinc-500 font-mono text-sm">Published: Feb 2026 • 5 min read</p>
+    </header>
+
+    <div class="prose prose-zinc max-w-none text-zinc-800 leading-relaxed text-lg space-y-6">
+        
+        <p>Context
+
+Deployment environment:
+
+CPU-only
+
+Limited memory
+
+Low-latency requirement
+
+Dockerized FastAPI app
+
+Choice:
+
+ResNet
+vs
+MobileNetV2</p>
+
+        <h2 class="text-2xl font-bold text-black mt-8 mb-4">Model Comparison</h2>
+        <p>| Model       | Params | Speed (CPU) | Size        |
+| ----------- | ------ | ----------- | ----------- |
+| ResNet50    | ~25M   | Slow        | Heavy       |
+| MobileNetV2 | ~3.4M  | Fast        | Lightweight |
+</p>
+
+        <div class="bg-zinc-50 p-4 rounded-md border border-zinc-200 font-mono text-sm overflow-x-auto my-6">
+            <pre><code>Why MobileNetV2 Won
+
+Depthwise separable convolutions
+
+Smaller memory footprint
+
+Faster inference on CPU
+
+Easier container deployment
+
+Lower cold-start time
+
+Real Deployment Results
+
+Using:
+TensorFlow
+
+Inference time:
+
+ResNet: ~1.2s
+
+MobileNetV2: ~180ms
+
+6x improvement.
+
+Accuracy difference was marginal for my dataset.
+
+Engineering Tradeoff
+
+ResNet:
+
+Slightly higher accuracy
+
+Heavy and slow
+
+MobileNetV2:
+
+Faster
+
+Production-ready
+
+Cost efficient
+
+For CPU-bound microservices, MobileNetV2 was the correct engineering choice</code></pre>
+        </div>
+
+        <h2 class="text-2xl font-bold text-black mt-8 mb-4">Final Takeaway</h2>
+        <p>Model selection must consider:
+
+Infrastructure
+
+Cost
+
+Latency
+
+Deployment constraints
+
+Not just benchmark accuracy.</p>
+
+    </div>
+</article>
+{% endblock %}

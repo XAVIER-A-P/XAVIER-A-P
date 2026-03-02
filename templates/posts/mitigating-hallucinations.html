@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<article class="max-w-3xl mx-auto">
+    <header class="mb-10 border-b border-zinc-200 pb-8">
+        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-black mb-6 inline-block">← Back to Blog</a>
+        
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-4">
+            Mitigating Hallucinations Using External API Validation
+        </h1>
+        <p class="text-zinc-500 font-mono text-sm">Published: Feb 2026 • 5 min read</p>
+    </header>
+
+    <div class="prose prose-zinc max-w-none text-zinc-800 leading-relaxed text-lg space-y-6">
+        
+        <p>The Problem
+
+LLMs fabricate structured data when uncertain.
+
+In a travel planning system, hallucinating:
+
+Flight numbers
+
+Prices
+
+Schedules
+
+Is unacceptable.</p>
+
+        <h2 class="text-2xl font-bold text-black mt-8 mb-4">The Solution: Enforced External API Validation</h2>
+        <p>Flight data sourced from:
+Amadeus IT Group
+
+Instead of:
+LLM generating flight options
+
+I enforced:
+
+LLM → Intent Extraction → API Call → Structured Validation → Response</p>
+
+        <div class="bg-zinc-50 p-4 rounded-md border border-zinc-200 font-mono text-sm overflow-x-auto my-6">
+            <pre><code>Validation Architecture
+
+LLM extracts structured query:
+
+origin
+
+destination
+
+dates
+
+API returns real data
+
+System schema-validates response
+
+LLM formats only validated data
+
+The LLM is never allowed to invent flight details.
+
+Guardrails Implemented
+
+JSON schema enforcement
+
+Strict field validation
+
+Response checksum
+
+No free-text generation for structured fields
+
+Result
+
+Hallucinated flight data dropped to zero.
+
+User trust increased.
+System reliability improved dramatically.</code></pre>
+        </div>
+
+        <h2 class="text-2xl font-bold text-black mt-8 mb-4">Core Insight</h2>
+        <p>LLMs should interpret.
+They should not invent critical structured data.</p>
+
+    </div>
+</article>
+{% endblock %}

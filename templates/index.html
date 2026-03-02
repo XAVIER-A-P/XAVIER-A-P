@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="mb-16">
+    <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-black mb-6">
+        Hi, I'm Xavier.<br>
+        <span class="text-zinc-700 font-semibold">I build production-grade AI systems and scalable ML infrastructure.</span>
+    </h1>
+    <ul class="space-y-3 text-zinc-800 font-mono text-sm mb-8">
+        <li>> 98% latency reduction via intelligent caching</li>
+        <li>> 60% cloud cost optimization in inference</li>
+        <li>> Multi-agent LLM + multimodal pipelines</li>
+    </ul>
+    <div class="flex space-x-4">
+        <a href="/projects" class="px-6 py-3 bg-black text-white text-sm font-semibold rounded-md hover:bg-zinc-800 transition shadow-sm">View Projects</a>
+    </div>
+</header>
+
+<section>
+    <h2 class="text-xl font-bold mb-6 border-b border-zinc-300 text-black pb-2">Featured Engineering</h2>
+    <div class="space-y-6">
+        {% for project in projects[:3] %}
+        <div class="group block p-6 rounded-lg border border-zinc-200 bg-zinc-50 hover:border-zinc-400 transition shadow-sm">
+            <h3 class="text-lg font-bold text-black mb-1">{{ project.title }}</h3>
+            <p class="text-zinc-700 text-sm mb-4 font-medium">{{ project.tagline }}</p>
+            
+            <div class="flex flex-wrap gap-2 mb-4">
+                {% for tech in project.tech %}
+                <span class="px-2 py-1 text-xs font-mono bg-white text-zinc-800 border border-zinc-200 rounded">{{ tech }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="flex justify-between items-center mt-4 pt-4 border-t border-zinc-200">
+                <span class="text-sm font-bold text-emerald-600">{{ project.metrics[0] }}</span>
+                <a href="{{ project.github }}" class="text-sm font-semibold text-blue-600 hover:underline">GitHub →</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

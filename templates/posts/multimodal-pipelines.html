@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<article class="max-w-3xl mx-auto">
+    <header class="mb-10 border-b border-zinc-200 pb-8">
+        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-black mb-6 inline-block">← Back to Blog</a>
+        
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-4">
+            Designing Fault-Tolerant Multimodal Pipelines
+        </h1>
+        <p class="text-zinc-500 font-mono text-sm">Published: Feb 2026 • 5 min read</p>
+    </header>
+
+    <div class="prose prose-zinc max-w-none text-zinc-800 leading-relaxed text-lg space-y-6">
+        
+        <p>Introduction
+
+Multimodal systems are fragile by default.
+
+When building a Cat vs Not classifier using:
+
+Image upload
+
+CNN inference
+
+LLM explanation layer
+
+REST API
+
+I had to design for:
+
+Corrupted images
+
+Inference failures
+
+Model drift
+
+Timeout errors
+
+Memory constraints
+
+Here’s how I engineered fault tolerance.</p>
+
+        <h2 class="text-2xl font-bold text-black mt-8 mb-4">The Bottleneck</h2>
+        <p>Architecture Overview
+
+Client → FastAPI → Image Validator → CNN → Confidence Check → LLM Explanation → Response
+
+CNN: TensorFlow
+Base model: MobileNetV2</p>
+
+        <div class="bg-zinc-50 p-4 rounded-md border border-zinc-200 font-mono text-sm overflow-x-auto my-6">
+            <pre><code>Layer 1: Input Validation
+
+Before inference:
+
+File size limits
+
+MIME type checks
+
+Image decoding verification
+
+Resize enforcement
+
+Prevents:
+
+Server crashes
+
+Memory overload
+
+Layer 2: Inference Confidence Guardrails
+
+If confidence < threshold:
+
+Return fallback response
+
+Do not hallucinate explanation
+
+Mark as uncertain
+
+Prevents:
+
+False confident outputs
+
+Misleading classifications
+
+Layer 3: Timeout Controls
+
+Used:
+
+Request timeouts
+
+Model inference timeout wrapper
+
+If model hangs:
+
+Fail gracefully
+
+Return 503
+
+Layer 4: Circuit Breaker for External LLM
+
+If explanation LLM fails:
+
+Return classification only
+
+Log error
+
+Do not block user
+
+Never chain failure dependencies.
+
+Layer 5: Logging + Observability
+
+Tracked:
+
+Inference time
+
+Failure rates
+
+Confidence distribution
+
+CPU usage
+
+This allowed early drift detection.
+...</code></pre>
+        </div>
+
+        <h2 class="text-2xl font-bold text-black mt-8 mb-4">Key Principle</h2>
+        <p>Every AI pipeline must assume:
+
+Models will fail
+
+Inputs will break
+
+APIs will timeout
+
+Fault tolerance is not optional in production AI.</p>
+
+    </div>
+</article>
+{% endblock %}

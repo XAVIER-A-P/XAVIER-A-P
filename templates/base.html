@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xavier A P | AI & MLOps Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600&display=swap');
+        body { background-color: #ffffff; color: #18181b; }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-200 selection:text-black">
+    <nav class="max-w-4xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center text-sm font-medium text-zinc-600 border-b border-zinc-100">
+        <a href="/" class="text-black font-semibold tracking-tight text-lg mb-4 md:mb-0 hover:text-zinc-500 transition">Xavier A P</a>
+        <div class="space-x-6">
+            <a href="/about" class="hover:text-black transition">About</a>
+            <a href="/projects" class="hover:text-black transition">Projects</a>
+            <a href="/blog" class="hover:text-black transition">Blog</a>
+            <a href="/contact" class="hover:text-black transition">Contact</a>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="max-w-4xl mx-auto px-6 py-12 text-sm text-zinc-400 border-t border-zinc-100 mt-12">
+        Engineering robust ML infrastructure. &copy; 2026 Xavier A P.
+    </footer>
+</body>
+</html>

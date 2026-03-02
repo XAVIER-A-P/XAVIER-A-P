@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true, theme: 'neutral'});</script>
+
+<header class="mb-12 border-b border-zinc-200 pb-8">
+    <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-4">System Architecture & Projects</h1>
+    <p class="text-zinc-600 font-medium">Deep dives into infrastructure, latency optimization, and production deployments.</p>
+</header>
+
+<div class="space-y-16">
+    {% for project in projects %}
+    <article class="border border-zinc-200 bg-white rounded-xl overflow-hidden shadow-sm">
+        
+        <div class="p-6 md:p-8 border-b border-zinc-100 bg-zinc-50/50">
+            <div class="flex flex-col md:flex-row justify-between items-start mb-4">
+                <h2 class="text-2xl font-bold text-black">{{ project.title }}</h2>
+                <div class="flex gap-2 mt-2 md:mt-0">
+                    <img src="https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white" alt="Docker Badge">
+                    <img src="https://img.shields.io/badge/CI%2FCD-Active-2088FF?logo=githubactions&logoColor=white" alt="CI/CD Badge">
+                </div>
+            </div>
+            <p class="text-zinc-600 mb-6 text-sm md:text-base font-medium">{{ project.tagline }}</p>
+            
+            <div class="flex gap-4 mb-6 text-sm">
+                <a href="{{ project.github }}" target="_blank" class="font-medium text-blue-600 hover:underline">GitHub Repo →</a>
+                <a href="{{ project.deployment }}" target="_blank" class="font-medium text-emerald-600 hover:underline">Live Deployment →</a>
+            </div>
+        </div>
+
+        <div class="p-6 md:p-8 space-y-10">
+            
+            <section>
+                <h3 class="text-lg font-bold text-black mb-4 border-l-2 border-zinc-300 pl-3">Architecture</h3>
+                <div class="bg-zinc-50 p-6 rounded-lg border border-zinc-200 overflow-x-auto flex justify-center">
+                    
+                    <div class="mermaid">
+                        {{ project.mermaid | safe }}
+                    </div>
+
+                </div>
+            </section>
+
+            <section>
+                <h3 class="text-lg font-bold text-black mb-4 border-l-2 border-zinc-300 pl-3">Project Summary</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                        <span class="font-bold text-black font-mono block mb-1">Reason for Building</span>
+                        <p class="text-zinc-600">{{ project.summary.reason }}</p>
+                    </div>
+                    <div>
+                        <span class="font-bold text-black font-mono block mb-1">Technical Details</span>
+                        <p class="text-zinc-600">{{ project.summary.details }}</p>
+                    </div>
+                    <div>
+                        <span class="font-bold text-black font-mono block mb-1">Achievements</span>
+                        <p class="text-zinc-600">{{ project.summary.achievements }}</p>
+                    </div>
+                    <div>
+                        <span class="font-bold text-black font-mono block mb-1">Deployment Challenges</span>
+                        <p class="text-zinc-600">{{ project.summary.challenges }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3 class="text-lg font-bold text-black mb-4 border-l-2 border-zinc-300 pl-3">Production Considerations</h3>
+                <div class="bg-zinc-50 p-5 rounded border border-zinc-200">
+                    <p class="text-sm text-zinc-700 font-mono">{{ project.production }}</p>
+                </div>
+            </section>
+
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% endblock %}
