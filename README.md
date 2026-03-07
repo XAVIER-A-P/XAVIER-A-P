@@ -1,7 +1,6 @@
 ## Hi, I'm Xavier👋
 
-<!--
-# 👋 Hi, I'm [Your Name]
+
 
 Welcome to my GitHub!  
 I’m currently exploring the world of **AI Engineering, MLOps (Machine Learning Operations), and ML Infrastructure**.  
@@ -36,4 +35,4 @@ Here are some ideas to get you started:
 - 📫 How to reach me: ...
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
--->
+
