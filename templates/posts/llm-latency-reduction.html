@@ -2,182 +2,227 @@
 
 {% block content %}
 <article class="max-w-3xl mx-auto">
+    
     <header class="mb-10 border-b border-zinc-200 pb-8">
-        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-black mb-6 inline-block">← Back to Blog</a>
-        
+        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-black mb-6 inline-block">
+            ← Back to Blog
+        </a>
+
         <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-4">
             How I Reduced LLM Latency by 98%
         </h1>
-        <p class="text-zinc-500 font-mono text-sm">Published: Feb 2026 • 5 min read</p>
+
+        <p class="text-zinc-500 font-mono text-sm">
+            Published: Feb 2026 • 5 min read
+        </p>
     </header>
 
-    <div class="prose prose-zinc max-w-none text-zinc-800 leading-relaxed text-lg space-y-6">
-        
-        <p>Introduction
+    <div class="prose prose-zinc max-w-none text-zinc-800 leading-relaxed text-lg">
 
-When building my multi-agent travel planning system, LLM latency was the single biggest bottleneck. Average response time was ~12–18 seconds — unacceptable for production.
+        <h2>Introduction</h2>
 
-Through architectural redesign, caching, async orchestration, and dynamic model routing, I reduced latency by 98%, bringing responses down to sub-second in common cases.
+        <p>
+        When building my multi-agent travel planning system, LLM latency was the single biggest bottleneck.
+        Average response time was <strong>~12–18 seconds</strong> — unacceptable for production.
+        </p>
 
-This article breaks down exactly how.</p>
+        <p>
+        Through architectural redesign, caching, async orchestration, and dynamic model routing,
+        I reduced latency by <strong>98%</strong>, bringing responses down to sub-second in common cases.
+        </p>
 
-        <h2 class="text-2xl font-bold text-black mt-8 mb-4">The Initial Problem</h2>
-        <p>The architecture looked like this:
+        <p>
+        This article breaks down exactly how.
+        </p>
 
-Client → FastAPI → LLM → External APIs → LLM → Response
+        <h2>The Initial Problem</h2>
 
-Problems:
+        <p>The architecture originally looked like this:</p>
 
-Every request hit the LLM
+        <pre><code>Client → FastAPI → LLM → External APIs → LLM → Response</code></pre>
 
-No caching
+        <p>Main problems:</p>
 
-Blocking API calls
+        <ul>
+            <li>Every request hit the LLM</li>
+            <li>No caching layer</li>
+            <li>Blocking API calls</li>
+            <li>Large model used for all queries</li>
+            <li>Redundant reasoning steps</li>
+        </ul>
 
-Large model used for all queries
+        <p>Average latency breakdown:</p>
 
-Redundant reasoning steps
+        <ul>
+            <li><strong>LLM inference:</strong> 8–12s</li>
+            <li><strong>External APIs:</strong> 3–5s</li>
+            <li><strong>Aggregation + formatting:</strong> 1–2s</li>
+        </ul>
 
-Average latency breakdown:
+        <p><strong>Total latency:</strong> ~15 seconds.</p>
 
-LLM inference: 8–12s
+        <h2>Step 1: Redis Caching (Biggest Win)</h2>
 
-External APIs: 3–5s
+        <p>Tech stack:</p>
 
-Aggregation + formatting: 1–2s
+        <ul>
+            <li>FastAPI</li>
+            <li>Redis</li>
+        </ul>
 
-Total: ~15 seconds.</p>
+        <p>Strategy:</p>
 
-        <div class="bg-zinc-50 p-4 rounded-md border border-zinc-200 font-mono text-sm overflow-x-auto my-6">
-            <pre><code>Step 1: Redis Caching (Biggest Win)
+        <ul>
+            <li>Cache normalized user queries</li>
+            <li>Cache flight API responses</li>
+            <li>Cache final LLM outputs for repeated queries</li>
+        </ul>
 
-Tech stack:
+        <p>Example logic:</p>
 
-FastAPI
+<pre><code>hash = hash_query(user_input)
 
-Redis
+cached = redis.get(hash)
 
-Strategy
+if cached:
+    return cached
+else:
+    result = compute_response()
+    redis.set(hash, result)
+    return result
+</code></pre>
 
-Cache:
+        <p>
+        Repeated queries dropped from <strong>15s → 150ms</strong>.
+        This alone reduced average latency by roughly <strong>80%</strong>.
+        </p>
 
-Normalized user queries
+        <h2>Step 2: Async External API Calls</h2>
 
-Flight API responses
+        <p>
+        I replaced blocking API calls with async concurrency.
+        </p>
 
-Final LLM outputs (for repeated patterns)
-
-Example logic:
-
-Hash normalized input
-
-Check Redis
-
-If hit → return immediately
-
-If miss → compute + store
-
-Impact
-
-Repeated queries dropped from 15s → 150ms.
-
-That alone reduced average latency by ~80%.
-
-Step 2: Async External API Calls
-
-I replaced blocking API calls with async concurrency:
-
-asyncio.gather(
+<pre><code>asyncio.gather(
     fetch_flights(),
     fetch_weather(),
     fetch_hotels()
 )
+</code></pre>
 
-Instead of sequential 3–5 seconds:
-Parallel execution → ~1.5 seconds.
+        <p>
+        Instead of sequential 3–5 seconds of API latency,
+        parallel execution reduced it to roughly <strong>~1.5 seconds</strong>.
+        </p>
 
-Latency improvement: ~60% on fresh queries.
+        <p>
+        Latency improvement: about <strong>60%</strong> on fresh queries.
+        </p>
 
-Step 3: Dynamic Model Routing
+        <h2>Step 3: Dynamic Model Routing</h2>
 
-Originally, I used one large model for everything.
+        <p>
+        Initially, I used a single large LLM for every request.
+        </p>
 
-Instead:
+        <p>Instead, I introduced routing logic:</p>
 
-Small model → simple queries
+        <ul>
+            <li>Small model → simple queries</li>
+            <li>Large model → complex reasoning</li>
+            <li>Deterministic path → no LLM required</li>
+        </ul>
 
-Larger model → complex reasoning
+        <p>Routing signals included:</p>
 
-Deterministic path → no LLM
+        <ul>
+            <li>Token count</li>
+            <li>Intent classification</li>
+            <li>Required reasoning depth</li>
+        </ul>
 
-Routing logic:
+        <p>
+        This reduced inference cost by <strong>~60%</strong> and latency by <strong>~40%</strong>.
+        </p>
 
-Token count
+        <h2>Step 4: Eliminating Redundant Reasoning Loops</h2>
 
-Intent classification
+        <p>
+        The original system used multi-step reasoning chains for every query.
+        </p>
 
-Required reasoning depth
+        <p>Optimization strategy:</p>
 
-This reduced:
+        <ul>
+            <li>Invoke reasoning chains only when required</li>
+            <li>Skip planning steps for structured requests</li>
+        </ul>
 
-Inference cost by ~60%
+        <p>
+        This removed roughly <strong>2–3 seconds</strong> from many requests.
+        </p>
 
-Latency by ~40%
+        <h2>Step 5: Smart API Response Storage</h2>
 
-Step 4: Eliminating Redundant Reasoning Loops
+        <p>
+        Flight data was retrieved from external travel APIs.
+        Instead of sending raw JSON to the LLM every time, I:
+        </p>
 
-I initially used multi-step reasoning for every query.
+        <ul>
+            <li>Structured responses once</li>
+            <li>Stored normalized outputs</li>
+            <li>Passed compact summaries to the LLM</li>
+        </ul>
 
-Optimization:
+        <p>
+        Reduced token usage significantly and lowered inference time.
+        </p>
 
-Only invoke reasoning chain when required
+        <h2>Final Results</h2>
 
-Skip planning step for structured requests
+        <table>
+            <thead>
+                <tr>
+                    <th>Stage</th>
+                    <th>Average Latency</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Initial System</td>
+                    <td>~15 seconds</td>
+                </tr>
+                <tr>
+                    <td>After Caching</td>
+                    <td>~3 seconds</td>
+                </tr>
+                <tr>
+                    <td>Async APIs</td>
+                    <td>~1.5 seconds</td>
+                </tr>
+                <tr>
+                    <td>Model Routing</td>
+                    <td>~1 second</td>
+                </tr>
+                <tr>
+                    <td>Final Optimized System</td>
+                    <td>&lt;300ms (cache hits)</td>
+                </tr>
+            </tbody>
+        </table>
 
-This removed 2–3 seconds per request.
+        <h2>Key Lessons</h2>
 
-Step 5: Smart API Response Storage
-
-External data (flight results) from:
-Amadeus IT Group
-
-Instead of:
-LLM interpreting raw API JSON each time
-
-I:
-
-Structured responses once
-
-Stored normalized output
-
-Passed compact summaries to LLM
-
-Token reduction → lower inference time.
-
-Final Results
-
-| Stage         | Avg Latency        |
-| ------------- | ------------------ |
-| Initial       | 15s                |
-| After Caching | 3s                 |
-| Async APIs    | 1.5s               |
-| Routing       | 1s                 |
-| Optimization  | <300ms (cache hit) |
-
-...</code></pre>
-        </div>
-
-        <h2 class="text-2xl font-bold text-black mt-8 mb-4">Key Lessons</h2>
-        <p>Most latency is architectural, not model-related.
-
-Caching beats model optimization.
-
-Parallelism is mandatory.
-
-Token reduction directly reduces cost + time.
-
-Production LLM systems require systems engineering, not prompt tweaks.</p>
+        <ul>
+            <li>Most latency problems are architectural, not model related.</li>
+            <li>Caching often provides larger gains than model optimization.</li>
+            <li>Parallel API execution is essential.</li>
+            <li>Reducing token usage lowers both latency and cost.</li>
+            <li>Production LLM systems require strong systems engineering, not just prompt design.</li>
+        </ul>
 
     </div>
+
 </article>
 {% endblock %}
