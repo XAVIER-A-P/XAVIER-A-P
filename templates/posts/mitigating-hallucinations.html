@@ -1,84 +1,180 @@
 {% extends "base.html" %}
 
 {% block content %}
-<article class="max-w-3xl mx-auto">
+<article class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    
     <header class="mb-10 border-b border-zinc-200 pb-8">
-        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-black mb-6 inline-block">← Back to Blog</a>
-        
-        <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-4">
+        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-zinc-900 transition-colors mb-6 inline-block">
+            ← Back to Blog
+        </a>
+
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4 leading-tight">
             Mitigating Hallucinations Using External API Validation
         </h1>
-        <p class="text-zinc-500 font-mono text-sm">Published: Feb 2026 • 5 min read</p>
+
+        <p class="text-zinc-500 font-mono text-sm">
+            Published: Feb 2026 • 5 min read
+        </p>
     </header>
 
-    <div class="prose prose-zinc max-w-none text-zinc-800 leading-relaxed text-lg space-y-6">
+    <div class="prose prose-zinc max-w-none text-zinc-700 leading-relaxed text-lg">
+
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">The Problem</h2>
+
+        <p class="mb-6">
+            Large Language Models can fabricate structured information when they are uncertain.
+            This phenomenon is commonly referred to as <strong class="text-zinc-900 font-semibold">hallucination</strong>.
+        </p>
+
+        <p class="mb-4">
+            In a travel planning system, hallucinating critical information such as:
+        </p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Flight numbers</li>
+            <li>Ticket prices</li>
+            <li>Departure schedules</li>
+        </ul>
+
+        <p class="mb-6">
+            is unacceptable because users may rely on that information to make real-world decisions.
+        </p>
+
+        <p class="mb-6">
+            In early testing, the LLM occasionally generated plausible but completely fabricated
+            flight details when the prompt lacked sufficient context.
+        </p>
+
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">The Solution: External API Validation</h2>
+
+        <p class="mb-6">
+            Instead of allowing the LLM to generate structured travel data,
+            the system retrieves verified information from an external aviation API.
+        </p>
+
+        <p class="mb-6">
+            Flight data is sourced from external travel infrastructure providers
+            such as <strong class="text-zinc-900 font-semibold">Amadeus</strong>.
+        </p>
+
+        <p class="mb-6">
+            The LLM is responsible only for interpreting user intent and formatting responses,
+            not for generating factual flight data.
+        </p>
+
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">System Architecture</h2>
+
         
-        <p>The Problem
 
-LLMs fabricate structured data when uncertain.
+        <pre class="bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto mb-6 shadow-sm font-mono text-sm"><code>User Query
+      ↓
+LLM Intent Extraction
+      ↓
+External Flight API Call
+      ↓
+Schema Validation Layer
+      ↓
+LLM Response Formatting
+      ↓
+User Response</code></pre>
 
-In a travel planning system, hallucinating:
+        <p class="mb-6">
+            This architecture ensures that all structured data returned to the user
+            originates from a verified external source rather than the model itself.
+        </p>
 
-Flight numbers
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Validation Pipeline</h2>
 
-Prices
+        <p class="mb-4">The validation process works in several stages:</p>
 
-Schedules
+        <ol class="list-decimal pl-6 mb-6 space-y-2">
+            <li>LLM extracts structured query fields from the user request.</li>
+            <li>System calls the external flight API.</li>
+            <li>Returned data is validated against a strict schema.</li>
+            <li>The LLM formats the validated data into natural language.</li>
+        </ol>
 
-Is unacceptable.</p>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Example Extracted Query</h2>
 
-        <h2 class="text-2xl font-bold text-black mt-8 mb-4">The Solution: Enforced External API Validation</h2>
-        <p>Flight data sourced from:
-Amadeus IT Group
+        <pre class="bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto mb-6 shadow-sm font-mono text-sm"><code>{
+  "origin": "NYC",
+  "destination": "LAX",
+  "date": "2026-05-10"
+}</code></pre>
 
-Instead of:
-LLM generating flight options
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Guardrails Implemented</h2>
 
-I enforced:
+        <p class="mb-4">Several safeguards were introduced to eliminate hallucinations:</p>
 
-LLM → Intent Extraction → API Call → Structured Validation → Response</p>
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li><strong class="text-zinc-900 font-semibold">JSON schema enforcement</strong> for all structured outputs</li>
+            <li><strong class="text-zinc-900 font-semibold">Strict field validation</strong> on API responses</li>
+            <li><strong class="text-zinc-900 font-semibold">Response integrity checks</strong> before passing to the LLM</li>
+            <li><strong class="text-zinc-900 font-semibold">No free-text generation</strong> allowed for flight details</li>
+        </ul>
 
-        <div class="bg-zinc-50 p-4 rounded-md border border-zinc-200 font-mono text-sm overflow-x-auto my-6">
-            <pre><code>Validation Architecture
+        <p class="mb-6">
+            If validation fails at any stage, the system returns a controlled error message
+            rather than allowing the model to fabricate a response.
+        </p>
 
-LLM extracts structured query:
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Results</h2>
 
-origin
-
-destination
-
-dates
-
-API returns real data
-
-System schema-validates response
-
-LLM formats only validated data
-
-The LLM is never allowed to invent flight details.
-
-Guardrails Implemented
-
-JSON schema enforcement
-
-Strict field validation
-
-Response checksum
-
-No free-text generation for structured fields
-
-Result
-
-Hallucinated flight data dropped to zero.
-
-User trust increased.
-System reliability improved dramatically.</code></pre>
+        <div class="overflow-x-auto mb-8">
+            <table class="w-full text-left border-collapse border border-zinc-200 rounded-lg shadow-sm">
+                <thead class="bg-zinc-100 border-b border-zinc-200">
+                    <tr>
+                        <th class="py-3 px-4 font-bold text-zinc-900">Metric</th>
+                        <th class="py-3 px-4 font-bold text-zinc-900">Before Validation</th>
+                        <th class="py-3 px-4 font-bold text-zinc-900">After Validation</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-200 bg-white">
+                    <tr>
+                        <td class="py-3 px-4 text-zinc-800 font-semibold">Hallucinated Flight Data</td>
+                        <td class="py-3 px-4 text-zinc-800">Occasional</td>
+                        <td class="py-3 px-4 font-bold text-emerald-600">0 occurrences</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-zinc-800 font-semibold">System Reliability</td>
+                        <td class="py-3 px-4 text-zinc-800">Moderate</td>
+                        <td class="py-3 px-4 font-bold text-emerald-600">High</td>
+                    </tr>
+                    <tr class="bg-zinc-50">
+                        <td class="py-3 px-4 text-zinc-900 font-semibold">User Trust</td>
+                        <td class="py-3 px-4 text-zinc-800">Risk of misinformation</td>
+                        <td class="py-3 px-4 font-bold text-emerald-600">Verified responses</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <h2 class="text-2xl font-bold text-black mt-8 mb-4">Core Insight</h2>
-        <p>LLMs should interpret.
-They should not invent critical structured data.</p>
+        <p class="mb-6">
+            By enforcing API validation, hallucinated flight details were completely eliminated.
+        </p>
+
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Core Insight</h2>
+
+        <p class="mb-4">
+            LLMs should be used for:
+        </p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Understanding user intent</li>
+            <li>Natural language generation</li>
+            <li>Summarizing structured data</li>
+        </ul>
+
+        <p class="mb-6">
+            They should <strong class="text-zinc-900 font-semibold">not</strong> be trusted to invent critical structured information.
+        </p>
+
+        <p class="mb-6">
+            Production-grade AI systems must combine LLM reasoning with deterministic
+            validation layers and authoritative data sources.
+        </p>
 
     </div>
+
 </article>
 {% endblock %}
