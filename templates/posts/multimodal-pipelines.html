@@ -1,142 +1,196 @@
 {% extends "base.html" %}
 
 {% block content %}
-<article class="max-w-3xl mx-auto">
+<article class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+
     <header class="mb-10 border-b border-zinc-200 pb-8">
-        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-black mb-6 inline-block">← Back to Blog</a>
-        
-        <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-4">
+        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-zinc-900 transition-colors mb-6 inline-block">
+            ← Back to Blog
+        </a>
+
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4 leading-tight">
             Designing Fault-Tolerant Multimodal Pipelines
         </h1>
-        <p class="text-zinc-500 font-mono text-sm">Published: Feb 2026 • 5 min read</p>
+
+        <p class="text-zinc-500 font-mono text-sm">
+            Published: Feb 2026 • 5 min read
+        </p>
     </header>
 
-    <div class="prose prose-zinc max-w-none text-zinc-800 leading-relaxed text-lg space-y-6">
+    <div class="prose prose-zinc max-w-none text-zinc-700 leading-relaxed text-lg">
+
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Introduction</h2>
+
+        <p class="mb-6">
+            Multimodal AI systems are inherently fragile. When building a production
+            pipeline that combines image processing, machine learning inference,
+            and language model explanations, multiple failure points can emerge.
+        </p>
+
+        <p class="mb-4">
+            While developing a <strong class="text-zinc-900 font-bold">Cat vs Not Cat classifier</strong>, the system included:
+        </p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Image upload interface</li>
+            <li>CNN inference layer</li>
+            <li>LLM explanation generator</li>
+            <li>REST API backend</li>
+        </ul>
+
+        <p class="mb-4">
+            To make the system reliable, the architecture had to handle several real-world risks:
+        </p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Corrupted image uploads</li>
+            <li>Model inference failures</li>
+            <li>Model drift</li>
+            <li>Timeout errors</li>
+            <li>Memory constraints</li>
+        </ul>
+
+        <p class="mb-6">
+            This article outlines how fault tolerance was engineered into the pipeline.
+        </p>
+
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">System Architecture</h2>
+
         
-        <p>Introduction
 
-Multimodal systems are fragile by default.
+        <pre class="bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto mb-6 shadow-sm font-mono text-sm"><code>Client
+  ↓
+FastAPI API
+  ↓
+Image Validator
+  ↓
+CNN Inference
+  ↓
+Confidence Check
+  ↓
+LLM Explanation Layer
+  ↓
+Response</code></pre>
 
-When building a Cat vs Not classifier using:
+        <p class="mb-6">
+            The convolutional neural network was implemented using <strong class="text-zinc-900 font-semibold">TensorFlow</strong>
+            with <strong class="text-zinc-900 font-semibold">MobileNetV2</strong> as the base model for efficient inference.
+        </p>
 
-Image upload
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Layer 1: Input Validation</h2>
 
-CNN inference
+        <p class="mb-4">Before any inference occurs, uploaded images pass through validation checks:</p>
 
-LLM explanation layer
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>File size limits</li>
+            <li>MIME type validation</li>
+            <li>Image decoding verification</li>
+            <li>Automatic resizing</li>
+        </ul>
 
-REST API
+        <p class="mb-4">This prevents:</p>
 
-I had to design for:
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Server crashes from malformed files</li>
+            <li>Memory overload from extremely large images</li>
+        </ul>
 
-Corrupted images
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Layer 2: Inference Confidence Guardrails</h2>
 
-Inference failures
+        <p class="mb-6">
+            Neural networks sometimes produce low-confidence predictions.
+            To avoid misleading responses, a confidence threshold was introduced.
+        </p>
 
-Model drift
+        <p class="mb-4">If prediction confidence is below the threshold:</p>
 
-Timeout errors
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>A fallback response is returned</li>
+            <li>The system avoids generating an explanation</li>
+            <li>The result is marked as uncertain</li>
+        </ul>
 
-Memory constraints
+        <p class="mb-6">This prevents falsely confident classifications.</p>
 
-Here’s how I engineered fault tolerance.</p>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Layer 3: Timeout Controls</h2>
 
-        <h2 class="text-2xl font-bold text-black mt-8 mb-4">The Bottleneck</h2>
-        <p>Architecture Overview
+        <p class="mb-4">
+            Long-running inference calls can degrade API reliability.
+            Timeout protection was added at multiple levels:
+        </p>
 
-Client → FastAPI → Image Validator → CNN → Confidence Check → LLM Explanation → Response
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>API request timeout limits</li>
+            <li>Model inference timeout wrappers</li>
+        </ul>
 
-CNN: TensorFlow
-Base model: MobileNetV2</p>
+        <p class="mb-4">If the model fails to respond in time:</p>
 
-        <div class="bg-zinc-50 p-4 rounded-md border border-zinc-200 font-mono text-sm overflow-x-auto my-6">
-            <pre><code>Layer 1: Input Validation
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>The request fails gracefully</li>
+            <li>The API returns a controlled <strong class="text-zinc-900 font-semibold">503 response</strong></li>
+        </ul>
 
-Before inference:
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Layer 4: Circuit Breaker for the LLM</h2>
 
-File size limits
+        
 
-MIME type checks
+        <p class="mb-6">
+            The LLM used for generating explanations is a secondary dependency.
+            If it fails, the classification system should still function.
+        </p>
 
-Image decoding verification
+        <p class="mb-4">To ensure this:</p>
 
-Resize enforcement
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>If the LLM fails, only the classification result is returned</li>
+            <li>The failure is logged for monitoring</li>
+            <li>The request is not blocked by the LLM dependency</li>
+        </ul>
 
-Prevents:
+        <p class="mb-6">
+            This follows a core distributed systems principle:  
+            <strong class="text-zinc-900 font-bold">never allow optional dependencies to block critical paths.</strong>
+        </p>
 
-Server crashes
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Layer 5: Logging and Observability</h2>
 
-Memory overload
+        <p class="mb-4">
+            Observability was added to detect system failures and model drift early.
+            The system tracks:
+        </p>
 
-Layer 2: Inference Confidence Guardrails
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Inference latency</li>
+            <li>Failure rates</li>
+            <li>Prediction confidence distribution</li>
+            <li>CPU usage and memory consumption</li>
+        </ul>
 
-If confidence < threshold:
+        <p class="mb-6">
+            These metrics help identify performance regressions and data drift
+            before they impact users.
+        </p>
 
-Return fallback response
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Key Principle</h2>
 
-Do not hallucinate explanation
+        <p class="mb-4">
+            Every production AI pipeline must assume the following:
+        </p>
 
-Mark as uncertain
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Models will fail</li>
+            <li>Inputs will break</li>
+            <li>External APIs will timeout</li>
+        </ul>
 
-Prevents:
-
-False confident outputs
-
-Misleading classifications
-
-Layer 3: Timeout Controls
-
-Used:
-
-Request timeouts
-
-Model inference timeout wrapper
-
-If model hangs:
-
-Fail gracefully
-
-Return 503
-
-Layer 4: Circuit Breaker for External LLM
-
-If explanation LLM fails:
-
-Return classification only
-
-Log error
-
-Do not block user
-
-Never chain failure dependencies.
-
-Layer 5: Logging + Observability
-
-Tracked:
-
-Inference time
-
-Failure rates
-
-Confidence distribution
-
-CPU usage
-
-This allowed early drift detection.
-...</code></pre>
-        </div>
-
-        <h2 class="text-2xl font-bold text-black mt-8 mb-4">Key Principle</h2>
-        <p>Every AI pipeline must assume:
-
-Models will fail
-
-Inputs will break
-
-APIs will timeout
-
-Fault tolerance is not optional in production AI.</p>
+        <p class="mb-6">
+            Fault tolerance is not optional in production AI systems.
+            Reliable AI infrastructure requires the same resilience
+            patterns used in traditional distributed systems.
+        </p>
 
     </div>
+
 </article>
 {% endblock %}
