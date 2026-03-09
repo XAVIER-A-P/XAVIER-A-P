@@ -19,12 +19,12 @@ PROJECTS = [
         "title": "Pack Vote",
         "tagline": "Agentic multi-LLM travel planner",
         "metrics": ["98% Latency ↓", "60% Cost ↓"],
-        "tech": ["FastAPI", "Redis", "Twilio", "MLflow"],
+        "tech": ["FastAPI", "Redis", "Anthropic", "Amadeus"],
         "github": "https://github.com/XAVIER-A-P/Pack-Vote--Agentic-AI-Travel-Planner",
         "deployment": "https://packvote.xaviermlops.dev",
         "summary": {
-            "reason": "Standard LLM APIs were too slow for synchronous, real-time group voting.",
-            "details": "Built a multi-model gateway with ranked-choice voting and SMS via Twilio. Orchestrated model tracking and evaluation via custom Python and MLflow.",
+            "reason": "Planning a trip with friends was a nightmare—different budgets, dates, vibes, and endless text threads. Out of that frustration, I built Pack Vote.",
+            "details": "Built a multi-model gateway with ranked-choice voting and Amadeus API.",
             "achievements": "Cut latency by 98% and optimized token usage for a 60% cost drop.",
             "challenges": "Handling rate limits and race conditions during concurrent agent interactions."
         },
@@ -63,7 +63,7 @@ graph TD
         "deployment": "https://bananadeath.xaviermlops.dev",
         "summary": {
             "reason": "Needed a lightweight, end-to-end CV pipeline to predict fruit ripeness on edge devices.",
-            "details": "Trained a regression model using TensorFlow, wrapped in a FastAPI backend with deep check data validation.",
+            "details": "Trained a regression model using TensorFlow, wrapped in a FastAPI backend.",
             "achievements": "Deployed a fully automated inference loop capable of 30fps processing on CPU.",
             "challenges": "Quantizing the model to run efficiently without requiring heavy GPU instances."
         },
@@ -83,13 +83,13 @@ graph TD
     {
         "id": "shelf-scanner",
         "title": "Shelf-Scanner",
-        "tagline": "Automated inventory tracking via edge computer vision",
+        "tagline": "Production-Grade AI Book Discovery Pipeline",
         "metrics": ["99.9% Uptime", "Edge Deployment"],
-        "tech": ["Python", "OpenCV", "Docker", "Prometheus"],
+        "tech": ["Python", "PostgreSQL", "Docker", "AWS S3 (boto3)"],
         "github": "https://github.com/XAVIER-A-P/Shelf-Scanner",
         "deployment": "https://shelfscanner.xaviermlops.dev",
         "summary": {
-            "reason": "Manual inventory auditing is error-prone and slow; required an automated optical solution.",
+            "reason": "Shelf Scanner is an AI-powered book discovery app born from the simple idea of helping readers quickly identify unfamiliar books at sales or shelves so they never walk away empty-handed.",
             "details": "Developed an object detection pipeline deployed via Docker containers to edge devices.",
             "achievements": "Achieved continuous scanning with 99.9% availability.",
             "challenges": "Managing container lifecycle and logging on remote, resource-constrained edge hardware."
@@ -116,7 +116,7 @@ graph TD
     
     FastAPI -->|5. Save History| DB[(PostgreSQL)]
     FastAPI -->|6. Render Partial| Client
-    
+
         """
     }
 ]
