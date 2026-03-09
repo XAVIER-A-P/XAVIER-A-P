@@ -1,103 +1,168 @@
 {% extends "base.html" %}
 
 {% block content %}
-<article class="max-w-3xl mx-auto">
+<article class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    
     <header class="mb-10 border-b border-zinc-200 pb-8">
-        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-black mb-6 inline-block">← Back to Blog</a>
-        
-        <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-4">
+        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-zinc-900 transition-colors mb-6 inline-block">
+            ← Back to Blog
+        </a>
+
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4 leading-tight">
             Choosing MobileNetV2 Over ResNet for CPU Inference
         </h1>
-        <p class="text-zinc-500 font-mono text-sm">Published: Feb 2026 • 5 min read</p>
+
+        <p class="text-zinc-500 font-mono text-sm">
+            Published: Feb 2026 • 5 min read
+        </p>
     </header>
 
-    <div class="prose prose-zinc max-w-none text-zinc-800 leading-relaxed text-lg space-y-6">
+    <div class="prose prose-zinc max-w-none text-zinc-700 leading-relaxed text-lg">
+
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Context</h2>
+
+        <p class="mb-6">
+            The model was deployed inside a containerized API service for image classification.
+            The deployment environment had several constraints:
+        </p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>CPU-only infrastructure</li>
+            <li>Limited memory availability</li>
+            <li>Low-latency response requirements</li>
+            <li>Dockerized FastAPI microservice</li>
+        </ul>
+
+        <p class="mb-4">
+            The model architecture decision came down to two common convolutional neural networks:
+        </p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li><strong class="text-zinc-900 font-semibold">ResNet50</strong></li>
+            <li><strong class="text-zinc-900 font-semibold">MobileNetV2</strong></li>
+        </ul>
+
         
-        <p>Context
 
-Deployment environment:
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Model Comparison</h2>
 
-CPU-only
-
-Limited memory
-
-Low-latency requirement
-
-Dockerized FastAPI app
-
-Choice:
-
-ResNet
-vs
-MobileNetV2</p>
-
-        <h2 class="text-2xl font-bold text-black mt-8 mb-4">Model Comparison</h2>
-        <p>| Model       | Params | Speed (CPU) | Size        |
-| ----------- | ------ | ----------- | ----------- |
-| ResNet50    | ~25M   | Slow        | Heavy       |
-| MobileNetV2 | ~3.4M  | Fast        | Lightweight |
-</p>
-
-        <div class="bg-zinc-50 p-4 rounded-md border border-zinc-200 font-mono text-sm overflow-x-auto my-6">
-            <pre><code>Why MobileNetV2 Won
-
-Depthwise separable convolutions
-
-Smaller memory footprint
-
-Faster inference on CPU
-
-Easier container deployment
-
-Lower cold-start time
-
-Real Deployment Results
-
-Using:
-TensorFlow
-
-Inference time:
-
-ResNet: ~1.2s
-
-MobileNetV2: ~180ms
-
-6x improvement.
-
-Accuracy difference was marginal for my dataset.
-
-Engineering Tradeoff
-
-ResNet:
-
-Slightly higher accuracy
-
-Heavy and slow
-
-MobileNetV2:
-
-Faster
-
-Production-ready
-
-Cost efficient
-
-For CPU-bound microservices, MobileNetV2 was the correct engineering choice</code></pre>
+        <div class="overflow-x-auto mb-8">
+            <table class="w-full text-left border-collapse border border-zinc-200 rounded-lg shadow-sm">
+                <thead class="bg-zinc-100 border-b border-zinc-200">
+                    <tr>
+                        <th class="py-3 px-4 font-bold text-zinc-900">Model</th>
+                        <th class="py-3 px-4 font-bold text-zinc-900">Parameters</th>
+                        <th class="py-3 px-4 font-bold text-zinc-900">CPU Speed</th>
+                        <th class="py-3 px-4 font-bold text-zinc-900">Model Size</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-200 bg-white">
+                    <tr>
+                        <td class="py-3 px-4 text-zinc-800 font-semibold">ResNet50</td>
+                        <td class="py-3 px-4 text-zinc-800 font-mono text-sm">~25M</td>
+                        <td class="py-3 px-4 text-rose-600 font-semibold">Slow</td>
+                        <td class="py-3 px-4 text-zinc-800">Heavy</td>
+                    </tr>
+                    <tr class="bg-zinc-50">
+                        <td class="py-3 px-4 text-zinc-900 font-semibold">MobileNetV2</td>
+                        <td class="py-3 px-4 text-zinc-800 font-mono text-sm">~3.4M</td>
+                        <td class="py-3 px-4 font-bold text-emerald-600">Fast</td>
+                        <td class="py-3 px-4 text-zinc-800">Lightweight</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <h2 class="text-2xl font-bold text-black mt-8 mb-4">Final Takeaway</h2>
-        <p>Model selection must consider:
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Why MobileNetV2 Won</h2>
 
-Infrastructure
+        <p class="mb-6">
+            MobileNetV2 was designed specifically for efficient inference on mobile and
+            resource-constrained environments.
+        </p>
 
-Cost
+        <p class="mb-4">Key advantages:</p>
 
-Latency
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Depthwise separable convolutions</li>
+            <li>Much smaller memory footprint</li>
+            <li>Significantly faster CPU inference</li>
+            <li>Easier container deployment</li>
+            <li>Lower cold-start latency</li>
+        </ul>
 
-Deployment constraints
+        
 
-Not just benchmark accuracy.</p>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Real Deployment Results</h2>
+
+        <p class="mb-6">
+            After implementing both models using TensorFlow, the performance difference
+            was significant.
+        </p>
+
+        <pre class="bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto mb-6 shadow-sm font-mono text-sm"><code>Framework: TensorFlow
+
+Inference Time (CPU)
+--------------------
+ResNet50:     ~1.2 seconds
+MobileNetV2:  ~180 milliseconds</code></pre>
+
+        <p class="mb-6">
+            This resulted in roughly a <strong class="text-zinc-900 font-semibold">6× improvement in inference speed</strong>.
+        </p>
+
+        <p class="mb-6">
+            The accuracy difference on the dataset used in the project was marginal,
+            making MobileNetV2 the better production choice.
+        </p>
+
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Engineering Tradeoffs</h2>
+
+        <p class="mb-4"><strong class="text-zinc-900 font-bold">ResNet50</strong></p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Slightly higher benchmark accuracy</li>
+            <li>Much heavier architecture</li>
+            <li>Slower inference on CPU</li>
+        </ul>
+
+        <p class="mb-4"><strong class="text-zinc-900 font-bold">MobileNetV2</strong></p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Much faster inference</li>
+            <li>Lightweight architecture</li>
+            <li>Better suited for microservices</li>
+            <li>Lower infrastructure cost</li>
+        </ul>
+
+        <p class="mb-6">
+            For CPU-bound inference systems, MobileNetV2 provided a far better
+            balance between performance and efficiency.
+        </p>
+
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Final Takeaway</h2>
+
+        <p class="mb-6">
+            Model selection in production systems should consider more than just
+            benchmark accuracy.
+        </p>
+
+        <p class="mb-4">Important factors include:</p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li>Infrastructure limitations</li>
+            <li>Inference latency</li>
+            <li>Memory footprint</li>
+            <li>Deployment complexity</li>
+            <li>Operational cost</li>
+        </ul>
+
+        <p class="mb-6">
+            In many real-world systems, an efficient model architecture can provide
+            significantly better overall performance than a larger model with
+            slightly higher theoretical accuracy.
+        </p>
 
     </div>
+
 </article>
 {% endblock %}
