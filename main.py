@@ -20,7 +20,7 @@ PROJECTS = [
         "tagline": "Agentic multi-LLM travel planner",
         "metrics": ["98% Latency ↓", "60% Cost ↓"],
         "tech": ["FastAPI", "Redis", "Twilio", "MLflow"],
-        "github": "https://github.com/yourusername/pack-vote",
+        "github": "https://github.com/XAVIER-A-P/Pack-Vote--Agentic-AI-Travel-Planner",
         "deployment": "https://packvote.xaviermlops.dev",
         "summary": {
             "reason": "Standard LLM APIs were too slow for synchronous, real-time group voting.",
@@ -48,7 +48,7 @@ PROJECTS = [
         "tagline": "Computer vision regression pipeline",
         "metrics": ["Real-time Inference", "Automated CI/CD"],
         "tech": ["TensorFlow", "FastAPI", "Render", "Computer Vision"],
-        "github": "https://github.com/yourusername/banana-death",
+        "github": "https://github.com/XAVIER-A-P/Days-To-Banana-Death",
         "deployment": "https://bananadeath.xaviermlops.dev",
         "summary": {
             "reason": "Needed a lightweight, end-to-end CV pipeline to predict fruit ripeness on edge devices.",
@@ -75,7 +75,7 @@ PROJECTS = [
         "tagline": "Automated inventory tracking via edge computer vision",
         "metrics": ["99.9% Uptime", "Edge Deployment"],
         "tech": ["Python", "OpenCV", "Docker", "Prometheus"],
-        "github": "https://github.com/yourusername/shelf-scanner",
+        "github": "https://github.com/XAVIER-A-P/Shelf-Scanner",
         "deployment": "https://shelfscanner.xaviermlops.dev",
         "summary": {
             "reason": "Manual inventory auditing is error-prone and slow; required an automated optical solution.",
