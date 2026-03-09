@@ -34,12 +34,23 @@ PROJECTS = [
         # PASTE PACK VOTE MERMAID SYNTAX BELOW       #
         # ========================================== #
         "mermaid": """
-        graph TD;
-            Client-->|FastAPI|Gateway;
-            Gateway-->Cache{Redis Hit?};
-            Cache-->|Yes|Response;
-            Cache-->|No|Model[LLM Endpoint];
-            Model-->Response;
+graph TD
+    User[User Frontend] -->|HTTP/WebSocket| API[FastAPI Backend]
+    API --> Gateway[AI Model Gateway]
+    API --> Voting[Voting Engine]
+    
+    subgraph "Agentic Layer"
+    Gateway -->|Router| OpenAI[OpenAI GPT-4o]
+    Gateway -->|Router| Anthropic[Claude 3.5]
+    Gateway -->|Tool Call| Tools[Pricing Tool]
+    Tools -->|API Request| Amadeus[Amadeus Flight API]
+    Tools -.->|Cache Hit/Miss| Redis[(Redis Cache)]
+    end
+    
+    subgraph "Data Layer"
+    API --> DB[(PostgreSQL)]
+    end
+
         """
     },
     {
@@ -89,11 +100,23 @@ PROJECTS = [
         # PASTE SHELF-SCANNER MERMAID SYNTAX BELOW   #
         # ========================================== #
         "mermaid": """
-        graph TD;
-            EdgeDevice-->|Docker|Container;
-            Container-->|OpenCV|Scanner;
-            Scanner-->|Metrics|Prometheus;
-            Scanner-->Database;
+graph TD
+    Client[Mobile Browser / HTMX] -->|POST /scan-ui| FastAPI[FastAPI Server]
+    FastAPI -->|1. Upload Image| S3[(AWS S3)]
+    FastAPI -->|2. Check IP Limit| Redis[(Redis Cache)]
+    
+    FastAPI -->|3A. Primary Vision| GPT4[GPT-4o Vision]
+    GPT4 -- Success --> RecEngine[Recommendation Engine]
+    GPT4 -- Timeout/Error --> Fallback[Google Vision OCR]
+    Fallback --> Cleanup[GPT-3.5 Text Cleanup]
+    Cleanup --> RecEngine
+    
+    RecEngine -->|4. Generate Scores| GPT3[GPT-3.5-Turbo]
+    GPT3 --> FastAPI
+    
+    FastAPI -->|5. Save History| DB[(PostgreSQL)]
+    FastAPI -->|6. Render Partial| Client
+    
         """
     }
 ]
