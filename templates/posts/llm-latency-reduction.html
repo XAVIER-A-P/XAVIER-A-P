@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<article class="max-w-3xl mx-auto">
+<article class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
     
     <header class="mb-10 border-b border-zinc-200 pb-8">
-        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-black mb-6 inline-block">
+        <a href="/blog" class="text-sm font-mono text-zinc-500 hover:text-zinc-900 transition-colors mb-6 inline-block">
             ← Back to Blog
         </a>
 
-        <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-black mb-4">
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4 leading-tight">
             How I Reduced LLM Latency by 98%
         </h1>
 
@@ -17,33 +17,33 @@
         </p>
     </header>
 
-    <div class="prose prose-zinc max-w-none text-zinc-800 leading-relaxed text-lg">
+    <div class="prose prose-zinc max-w-none text-zinc-700 leading-relaxed text-lg">
 
-        <h2>Introduction</h2>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Introduction</h2>
 
-        <p>
-        When building my multi-agent travel planning system, LLM latency was the single biggest bottleneck.
-        Average response time was <strong>~12–18 seconds</strong> — unacceptable for production.
+        <p class="mb-6">
+            When building my multi-agent travel planning system, LLM latency was the single biggest bottleneck.
+            Average response time was <strong class="text-zinc-900 font-semibold">~12–18 seconds</strong> — unacceptable for production.
         </p>
 
-        <p>
-        Through architectural redesign, caching, async orchestration, and dynamic model routing,
-        I reduced latency by <strong>98%</strong>, bringing responses down to sub-second in common cases.
+        <p class="mb-6">
+            Through architectural redesign, caching, async orchestration, and dynamic model routing,
+            I reduced latency by <strong class="text-zinc-900 font-semibold">98%</strong>, bringing responses down to sub-second in common cases.
         </p>
 
-        <p>
-        This article breaks down exactly how.
+        <p class="mb-6">
+            This article breaks down exactly how.
         </p>
 
-        <h2>The Initial Problem</h2>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">The Initial Problem</h2>
 
-        <p>The architecture originally looked like this:</p>
+        <p class="mb-6">The architecture originally looked like this:</p>
 
-        <pre><code>Client → FastAPI → LLM → External APIs → LLM → Response</code></pre>
+        <pre class="bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto mb-6 shadow-sm font-mono text-sm"><code>Client → FastAPI → LLM → External APIs → LLM → Response</code></pre>
 
-        <p>Main problems:</p>
+        <p class="mb-4">Main problems:</p>
 
-        <ul>
+        <ul class="list-disc pl-6 mb-6 space-y-2">
             <li>Every request hit the LLM</li>
             <li>No caching layer</li>
             <li>Blocking API calls</li>
@@ -51,37 +51,36 @@
             <li>Redundant reasoning steps</li>
         </ul>
 
-        <p>Average latency breakdown:</p>
+        <p class="mb-4">Average latency breakdown:</p>
 
-        <ul>
-            <li><strong>LLM inference:</strong> 8–12s</li>
-            <li><strong>External APIs:</strong> 3–5s</li>
-            <li><strong>Aggregation + formatting:</strong> 1–2s</li>
+        <ul class="list-disc pl-6 mb-6 space-y-2">
+            <li><strong class="text-zinc-900 font-semibold">LLM inference:</strong> 8–12s</li>
+            <li><strong class="text-zinc-900 font-semibold">External APIs:</strong> 3–5s</li>
+            <li><strong class="text-zinc-900 font-semibold">Aggregation + formatting:</strong> 1–2s</li>
         </ul>
 
-        <p><strong>Total latency:</strong> ~15 seconds.</p>
+        <p class="mb-6"><strong class="text-zinc-900 font-semibold">Total latency:</strong> ~15 seconds.</p>
 
-        <h2>Step 1: Redis Caching (Biggest Win)</h2>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Step 1: Redis Caching (Biggest Win)</h2>
 
-        <p>Tech stack:</p>
+        <p class="mb-4">Tech stack:</p>
 
-        <ul>
+        <ul class="list-disc pl-6 mb-6 space-y-2">
             <li>FastAPI</li>
             <li>Redis</li>
         </ul>
 
-        <p>Strategy:</p>
+        <p class="mb-4">Strategy:</p>
 
-        <ul>
+        <ul class="list-disc pl-6 mb-6 space-y-2">
             <li>Cache normalized user queries</li>
             <li>Cache flight API responses</li>
             <li>Cache final LLM outputs for repeated queries</li>
         </ul>
 
-        <p>Example logic:</p>
+        <p class="mb-4">Example logic:</p>
 
-<pre><code>hash = hash_query(user_input)
-
+        <pre class="bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto mb-6 shadow-sm font-mono text-sm"><code>hash = hash_query(user_input)
 cached = redis.get(hash)
 
 if cached:
@@ -89,137 +88,137 @@ if cached:
 else:
     result = compute_response()
     redis.set(hash, result)
-    return result
-</code></pre>
+    return result</code></pre>
 
-        <p>
-        Repeated queries dropped from <strong>15s → 150ms</strong>.
-        This alone reduced average latency by roughly <strong>80%</strong>.
+        <p class="mb-6">
+            Repeated queries dropped from <strong class="text-zinc-900 font-semibold">15s → 150ms</strong>.
+            This alone reduced average latency by roughly <strong class="text-zinc-900 font-semibold">80%</strong>.
         </p>
 
-        <h2>Step 2: Async External API Calls</h2>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Step 2: Async External API Calls</h2>
 
-        <p>
-        I replaced blocking API calls with async concurrency.
+        <p class="mb-6">
+            I replaced blocking API calls with async concurrency.
         </p>
 
-<pre><code>asyncio.gather(
+        <pre class="bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto mb-6 shadow-sm font-mono text-sm"><code>asyncio.gather(
     fetch_flights(),
     fetch_weather(),
     fetch_hotels()
-)
-</code></pre>
+)</code></pre>
 
-        <p>
-        Instead of sequential 3–5 seconds of API latency,
-        parallel execution reduced it to roughly <strong>~1.5 seconds</strong>.
+        <p class="mb-6">
+            Instead of sequential 3–5 seconds of API latency,
+            parallel execution reduced it to roughly <strong class="text-zinc-900 font-semibold">~1.5 seconds</strong>.
         </p>
 
-        <p>
-        Latency improvement: about <strong>60%</strong> on fresh queries.
+        <p class="mb-6">
+            Latency improvement: about <strong class="text-zinc-900 font-semibold">60%</strong> on fresh queries.
         </p>
 
-        <h2>Step 3: Dynamic Model Routing</h2>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Step 3: Dynamic Model Routing</h2>
 
-        <p>
-        Initially, I used a single large LLM for every request.
+        <p class="mb-6">
+            Initially, I used a single large LLM for every request.
         </p>
 
-        <p>Instead, I introduced routing logic:</p>
+        <p class="mb-4">Instead, I introduced routing logic:</p>
 
-        <ul>
+        <ul class="list-disc pl-6 mb-6 space-y-2">
             <li>Small model → simple queries</li>
             <li>Large model → complex reasoning</li>
             <li>Deterministic path → no LLM required</li>
         </ul>
 
-        <p>Routing signals included:</p>
+        <p class="mb-4">Routing signals included:</p>
 
-        <ul>
+        <ul class="list-disc pl-6 mb-6 space-y-2">
             <li>Token count</li>
             <li>Intent classification</li>
             <li>Required reasoning depth</li>
         </ul>
 
-        <p>
-        This reduced inference cost by <strong>~60%</strong> and latency by <strong>~40%</strong>.
+        <p class="mb-6">
+            This reduced inference cost by <strong class="text-zinc-900 font-semibold">~60%</strong> and latency by <strong class="text-zinc-900 font-semibold">~40%</strong>.
         </p>
 
-        <h2>Step 4: Eliminating Redundant Reasoning Loops</h2>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Step 4: Eliminating Redundant Reasoning Loops</h2>
 
-        <p>
-        The original system used multi-step reasoning chains for every query.
+        <p class="mb-6">
+            The original system used multi-step reasoning chains for every query.
         </p>
 
-        <p>Optimization strategy:</p>
+        <p class="mb-4">Optimization strategy:</p>
 
-        <ul>
+        <ul class="list-disc pl-6 mb-6 space-y-2">
             <li>Invoke reasoning chains only when required</li>
             <li>Skip planning steps for structured requests</li>
         </ul>
 
-        <p>
-        This removed roughly <strong>2–3 seconds</strong> from many requests.
+        <p class="mb-6">
+            This removed roughly <strong class="text-zinc-900 font-semibold">2–3 seconds</strong> from many requests.
         </p>
 
-        <h2>Step 5: Smart API Response Storage</h2>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Step 5: Smart API Response Storage</h2>
 
-        <p>
-        Flight data was retrieved from external travel APIs.
-        Instead of sending raw JSON to the LLM every time, I:
+        <p class="mb-4">
+            Flight data was retrieved from external travel APIs.
+            Instead of sending raw JSON to the LLM every time, I:
         </p>
 
-        <ul>
+        <ul class="list-disc pl-6 mb-6 space-y-2">
             <li>Structured responses once</li>
             <li>Stored normalized outputs</li>
             <li>Passed compact summaries to the LLM</li>
         </ul>
 
-        <p>
-        Reduced token usage significantly and lowered inference time.
+        <p class="mb-6">
+            Reduced token usage significantly and lowered inference time.
         </p>
 
-        <h2>Final Results</h2>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Final Results</h2>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Stage</th>
-                    <th>Average Latency</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Initial System</td>
-                    <td>~15 seconds</td>
-                </tr>
-                <tr>
-                    <td>After Caching</td>
-                    <td>~3 seconds</td>
-                </tr>
-                <tr>
-                    <td>Async APIs</td>
-                    <td>~1.5 seconds</td>
-                </tr>
-                <tr>
-                    <td>Model Routing</td>
-                    <td>~1 second</td>
-                </tr>
-                <tr>
-                    <td>Final Optimized System</td>
-                    <td>&lt;300ms (cache hits)</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="overflow-x-auto mb-8">
+            <table class="w-full text-left border-collapse border border-zinc-200 rounded-lg shadow-sm">
+                <thead class="bg-zinc-100 border-b border-zinc-200">
+                    <tr>
+                        <th class="py-3 px-4 font-bold text-zinc-900">Stage</th>
+                        <th class="py-3 px-4 font-bold text-zinc-900">Average Latency</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-200 bg-white">
+                    <tr>
+                        <td class="py-3 px-4 text-zinc-800">Initial System</td>
+                        <td class="py-3 px-4 text-zinc-800 font-mono text-sm">~15 seconds</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-zinc-800">After Caching</td>
+                        <td class="py-3 px-4 text-zinc-800 font-mono text-sm">~3 seconds</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-zinc-800">Async APIs</td>
+                        <td class="py-3 px-4 text-zinc-800 font-mono text-sm">~1.5 seconds</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 text-zinc-800">Model Routing</td>
+                        <td class="py-3 px-4 text-zinc-800 font-mono text-sm">~1 second</td>
+                    </tr>
+                    <tr class="bg-zinc-50">
+                        <td class="py-3 px-4 font-semibold text-zinc-900">Final Optimized System</td>
+                        <td class="py-3 px-4 font-bold text-emerald-600 font-mono text-sm">&lt;300ms (cache hits)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-        <h2>Key Lessons</h2>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 mt-10 mb-6">Key Lessons</h2>
 
-        <ul>
-            <li>Most latency problems are architectural, not model related.</li>
-            <li>Caching often provides larger gains than model optimization.</li>
-            <li>Parallel API execution is essential.</li>
-            <li>Reducing token usage lowers both latency and cost.</li>
-            <li>Production LLM systems require strong systems engineering, not just prompt design.</li>
+        <ul class="list-disc pl-6 mb-6 space-y-3">
+            <li><strong class="text-zinc-900">Most latency problems are architectural</strong>, not model related.</li>
+            <li><strong class="text-zinc-900">Caching often provides larger gains</strong> than model optimization.</li>
+            <li><strong class="text-zinc-900">Parallel API execution</strong> is essential.</li>
+            <li><strong class="text-zinc-900">Reducing token usage</strong> lowers both latency and cost.</li>
+            <li>Production LLM systems require <strong class="text-zinc-900">strong systems engineering</strong>, not just prompt design.</li>
         </ul>
 
     </div>
